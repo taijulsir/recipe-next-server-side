@@ -29,7 +29,7 @@ async function run() {
 
 
 
-        const recipeCollection =  client.db("recipeNext").collection("allRecipe")
+        const recipeCollection = client.db("recipeNext").collection("allRecipe")
 
         // API For Crate Recipe
         app.post("/api/v1/createRecipe", async (req, res) => {
@@ -45,31 +45,53 @@ async function run() {
         })
 
         //API For Get All Recipe
-        app.get('/api/v1/allRecipe',async(req,res)=>{
-           try{
-            const result = await recipeCollection.find().toArray()
-            res.send(result)
-           }
-           catch(error){
-            console.error("Error processing on get all recipe", error.message)
-            res.status(500).send({error: "Error processing on get all recipe"})
-           }
+        app.get('/api/v1/allRecipe', async (req, res) => {
+            try {
+                const result = await recipeCollection.find().toArray()
+                res.send(result)
+            }
+            catch (error) {
+                console.error("Error processing on get all recipe", error.message)
+                res.status(500).send({ error: "Error processing on get all recipe" })
+            }
         })
 
         //API For Get single recipe
-        app.get("/api/v1/recipe/:id",async(req,res)=>{
-            try{
+        app.get("/api/v1/recipe/:id", async (req, res) => {
+            try {
                 const id = req.params.id;
-                const query = {_id: new ObjectId(id)}
+                const query = { _id: new ObjectId(id) }
                 const result = await recipeCollection.findOne(query)
                 res.send(result)
             }
-            catch(error){
-                console.error("Error processing on get single recipe",error.message  )
-                res.status(500).send({error:"Error processing on get single recipe" })
+            catch (error) {
+                console.error("Error processing on get single recipe", error.message)
+                res.status(500).send({ error: "Error processing on get single recipe" })
             }
         })
-
+        // API For update a recipe
+        app.put("/api/v1/recipe/:id", async (req, res) => {
+            try {
+                const recipe = req.body
+                const id = req.params.id;
+                const query = { _id: new ObjectId(id) }
+                const options = { upsert: true };
+                const updateRecipe = {
+                    $set: {
+                        title: recipe.title,
+                        ingredients: recipe.ingredients,
+                        instructions: recipe.instructions,
+                        photo: recipe.photo
+                    }
+                }
+                const result = await recipeCollection.updateOne(query, updateRecipe, options)
+                res.send(result)
+            }
+            catch (error) {
+                console.error("Error processing on update recipe", error.message)
+                res.status(500).send("Error processing on update recipe")
+            }
+        })
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
