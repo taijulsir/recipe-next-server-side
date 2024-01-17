@@ -29,7 +29,7 @@ async function run() {
 
 
 
-        const recipeCollection = await client.db("recipeNext").collection("allRecipe")
+        const recipeCollection =  client.db("recipeNext").collection("allRecipe")
 
         // API For Crate Recipe
         app.post("/api/v1/createRecipe", async (req, res) => {
@@ -43,6 +43,20 @@ async function run() {
                 res.status(500).send({ error: 'Error processing create recipe' });
             }
         })
+
+        //API For Get All Recipe
+        app.get('/allRecipe',async(req,res)=>{
+           try{
+            const result = await recipeCollection.find().toArray()
+            res.send(result)
+           }
+           catch(error){
+            console.error("Error processing on get all recipe", error.message)
+            res.status(500).send({error: "Error processing on get all recipe"})
+           }
+        })
+
+        
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
