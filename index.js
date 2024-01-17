@@ -57,7 +57,7 @@ async function run() {
         })
 
         //API For Get single recipe
-        app.get("/api/v1/recipe/:id", async (req, res) => {
+        app.get("/api/v1/singleRecipe/:id", async (req, res) => {
             try {
                 const id = req.params.id;
                 const query = { _id: new ObjectId(id) }
@@ -69,8 +69,9 @@ async function run() {
                 res.status(500).send({ error: "Error processing on get single recipe" })
             }
         })
+
         // API For update a recipe
-        app.put("/api/v1/recipe/:id", async (req, res) => {
+        app.put("/api/v1/updateRecipe/:id", async (req, res) => {
             try {
                 const recipe = req.body
                 const id = req.params.id;
@@ -90,6 +91,20 @@ async function run() {
             catch (error) {
                 console.error("Error processing on update recipe", error.message)
                 res.status(500).send("Error processing on update recipe")
+            }
+        })
+
+        // API for delete a recipe
+        app.delete("/api/v1/deleteRecipe/:id",async(req,res)=>{
+            try{
+                const id = req.params.id;
+                const query = {_id: new ObjectId(id)}
+                const result = await recipeCollection.deleteOne(query)
+                res.send(result)
+            }
+            catch(error){
+                console.error("Error processing on delete a recipe",error.message)
+                res.status(500).send("Error processing on delete a recipe")
             }
         })
 
