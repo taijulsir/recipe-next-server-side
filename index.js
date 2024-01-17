@@ -9,7 +9,7 @@ app.use(express.json())
 
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.49cfwvw.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -45,7 +45,7 @@ async function run() {
         })
 
         //API For Get All Recipe
-        app.get('/allRecipe',async(req,res)=>{
+        app.get('/api/v1/allRecipe',async(req,res)=>{
            try{
             const result = await recipeCollection.find().toArray()
             res.send(result)
@@ -56,7 +56,21 @@ async function run() {
            }
         })
 
-        
+        //API For Get single recipe
+        app.get("/api/v1/recipe/:id",async(req,res)=>{
+            try{
+                const id = req.params.id;
+                const query = {_id: new ObjectId(id)}
+                const result = await recipeCollection.findOne(query)
+                res.send(result)
+            }
+            catch(error){
+                console.error("Error processing on get single recipe",error.message  )
+                res.status(500).send({error:"Error processing on get single recipe" })
+            }
+        })
+
+
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
